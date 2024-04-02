@@ -36,7 +36,8 @@ contract VHToken {
 
     function buyMint() public payable {
         // How many tokens will he MINT based on the ETH sent?
-        require(msg.value >= MINT_PRICE);
+        require(msg.value >= MINT_PRICE, "Send at least 0.2 eth");
+        require(totalCreated < totalSupply, "Total supply reached");
 
         // lets calculate how many will he mint
         uint256 quantity = msg.value / MINT_PRICE;

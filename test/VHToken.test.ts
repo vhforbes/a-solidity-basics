@@ -74,4 +74,15 @@ describe("VHToken", () => {
     expect(await VHToken.getBalance(address2)).to.be.equal(5);
     expect(await VHToken.totalCreated()).to.be.equal(5);
   });
+
+  it("Rejects if user tries to mint more than supply", async () => {
+    const [address1, address2] = await ethers.getSigners();
+    const VHToken = await hre.ethers.deployContract("VHToken");
+
+    const mintTx = VHToken.connect(address2).buyMint({
+      value: ethers.parseEther("100.0"),
+    });
+
+    expect(await mintTx).to.be.revertedWith("Total supply reached");
+  });
 });
