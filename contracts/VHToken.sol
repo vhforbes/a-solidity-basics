@@ -4,12 +4,14 @@ pragma solidity 0.8.24;
 contract VHToken {
     uint256 public constant totalSupply = 1000;
     uint256 public totalCreated = 0;
+    address public owner = msg.sender;
+    uint256 public MINT_PRICE = 0.2 ether; // 0.2 ether in wei
 
     // Keep track of who owns what'
     // Can't iterate, just something that pois one primitive to another.
     mapping(address => uint256) public balances;
 
-    function create(uint256 quantity) public {
+    function create(uint256 quantity) public onlyOwner {
         require(quantity + totalCreated <= totalSupply, "Total supply reached!");
 
         // The += is to the second time he creates so it doesn`t overrite the old balance.
@@ -30,5 +32,21 @@ contract VHToken {
 
     function getBalance(address _addr) public view returns (uint256) {
         return balances[_addr];
+    }
+
+    function buyMint() public payable {
+        // How many tokens will he MINT based on the ETH sent?
+        require(msg.value >= MINT_PRICE);
+
+        // lets calculate how many will he mint
+        uint256 quantity = msg.value / MINT_PRICE;
+        totalCreated += totalCreated + quantity;
+
+        balances[msg.sender] += quantity;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can perform this action");
+        _;
     }
 }
